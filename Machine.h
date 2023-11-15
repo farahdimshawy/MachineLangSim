@@ -5,19 +5,19 @@
 #ifndef MACHINESIMULATOR_MACHINE_H
 #define MACHINESIMULATOR_MACHINE_H
 #include "memory.h"
-#include <vector>
+
+class Machine;
 class InstructionRegister{
 public:
     string input;
     Instruction i;
     Register r;
-    memory m;
-    //function to extract memory and register based on instruction from input string
-
+    InstructionRegister();
+    friend class Machine;
 };
 class Machine {
 private:
-    int hexCharToDecimal(char hexChar) const {
+    [[nodiscard]] static int hexCharToDecimal(char hexChar) {
         if (hexChar >= '0' && hexChar <= '9') {
             return hexChar - '0';
         } else if (hexChar >= 'A' && hexChar <= 'F') {
@@ -28,18 +28,34 @@ private:
             return 0; // Invalid character, default to 0
         }
     }
+    [[nodiscard]] static string toHexString(int value) {
+        ostringstream oss;
+        oss << uppercase << hex << setw(2) << setfill('0') << to_string(value);
+        return oss.str();
+    }
+    bool halt;
 public:
-    //InstructionRegister IR;
-    int programcounter; //contains address of next instruction and increments by 2
+    InstructionRegister IR;
+    string screen;
+    int programcounter{}; //contains address of next instruction and increments by 2
     vector<Register> RegisterArray; //contains all 16 registers and their content
     vector<memory> MemoryArray; //contains all 256 memory addresses and their content
+
     Machine();
+    ~Machine();
+
+    bool valid_value(string ins);
+    bool halted();
     void initializeMemory();//initializes memory addresses to contain zeroes
     void displayMemory() const;//displays the memory
     void initializeRegister();//initializes all registers to contain zeroes
     void displayRegister() const;//displays the registers
     void read(const string& filename);//reads machine language code file and stores it in memory
-    void extractString(int StartAddress);
+    string extractString(int StartAddress);
+    void execute();
+    void reset();
+    string screen_content();
+
     friend class InstructionRegister;
 };
 #endif //MACHINESIMULATOR_MACHINE_H

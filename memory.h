@@ -8,6 +8,10 @@
 #include <bitset>
 #include <sstream>
 #include <fstream>
+#include <iomanip>
+#include <vector>
+#include <string>
+#include <algorithm>
 using namespace std;
 
 class memory {
@@ -16,18 +20,19 @@ protected:
     int address;
     //both values are in hexadecimal
 public:
+    memory();
     explicit memory(int add): value(0), address(add){}
-    friend class Instruction;
     friend class Machine;
     friend class InstructionRegister;
+    friend class Register;
 };
-
 class Register{
 protected:
-    int value{0};
+    int value;
     int name;
     //also hexadecimal
 public:
+    Register();
     explicit Register(int n): value(0), name(n){}
     Register operator+(Register s); //add register values
     Register operator=(memory m); //store memory value to register value
@@ -40,9 +45,10 @@ public:
 class Instruction{
 protected:
     int value{0};
-    Register r;
-    memory m;
+    char name;
 public:
-
+    friend class InstructionRegister;
+    friend class Machine;
 };
+
 #endif //MACHINESIMULATOR_MEMORY_H
